@@ -11,7 +11,7 @@ class RakBaca extends StatelessWidget {
     title: 'Rak Baca',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff4b3769)),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff32604d)),
     ),
     home: const LibraryScreen(),
   );
@@ -50,8 +50,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: const Color(0xff33244d),
-                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xff214736),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       padding: const EdgeInsets.fromLTRB(20, 24, 82, 24),
                       child: const Column(
@@ -62,12 +62,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 32,
+                              fontFamily: 'serif',
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             'Katalog buku klasik',
-                            style: TextStyle(color: Color(0xffe3d7f2)),
+                            style: TextStyle(color: Color(0xffd5e3d6)),
                           ),
                         ],
                       ),
@@ -76,9 +77,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       right: 20,
                       bottom: 20,
                       child: Icon(
-                        Icons.menu_book_outlined,
+                        Icons.auto_stories_outlined,
                         size: 42,
-                        color: Color(0xffdcc7ff),
+                        color: Color(0xffb9d3bf),
                       ),
                     ),
                   ],
@@ -109,15 +110,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 if (matches.isEmpty)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Text(
-                      'Tidak ada buku yang cocok. Ubah kata kunci atau filter.',
-                    ),
+                    child: Text('Tidak ada buku yang cocok.'),
                   ),
                 for (final book in matches)
                   Card(
-                    margin: const EdgeInsets.only(top: 10),
+                    margin: EdgeInsets.zero,
+                    shape: const Border(
+                      bottom: BorderSide(color: Color(0xffdce4de)),
+                    ),
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.surfaceContainerLow,
+                    color: Colors.transparent,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
