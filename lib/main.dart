@@ -28,6 +28,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
   String query = '';
   bool onlyFavorites = false;
   final favorites = <int>{};
+  final searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +45,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
           (!onlyFavorites || favorites.contains(book.id));
     }).toList();
     return Scaffold(
+      backgroundColor: const Color(0xfff6f7f2),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
             child: ListView(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
               children: [
                 Stack(
                   children: [
@@ -51,9 +59,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: const Color(0xff214736),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.fromLTRB(20, 24, 82, 24),
+                      padding: const EdgeInsets.fromLTRB(20, 30, 82, 30),
                       child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -86,31 +94,60 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
                 const SizedBox(height: 18),
                 TextField(
-                  decoration: const InputDecoration(
+                  controller: searchController,
+                  decoration: InputDecoration(
                     labelText: 'Cari judul, penulis, atau genre',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: query.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Hapus kata kunci',
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              searchController.clear();
+                              setState(() => query = '');
+                            },
+                          ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onChanged: (value) =>
                       setState(() => query = value.trim().toLowerCase()),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: FilterChip(
-                    label: Text('Favorit (${favorites.length})'),
-                    selected: onlyFavorites,
-                    onSelected: (value) =>
-                        setState(() => onlyFavorites = value),
-                  ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Semua buku'),
+                      selected: !onlyFavorites,
+                      onSelected: (_) => setState(() => onlyFavorites = false),
+                    ),
+                    FilterChip(
+                      label: Text('Favorit (${favorites.length})'),
+                      selected: onlyFavorites,
+                      onSelected: (value) =>
+                          setState(() => onlyFavorites = value),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 10),
                 Text(
                   '${matches.length} buku',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
+                const SizedBox(height: 6),
                 if (matches.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Text('Tidak ada buku yang cocok.'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Text(
+                      onlyFavorites && query.isEmpty
+                          ? 'Belum ada buku favorit.'
+                          : 'Tidak ada buku yang cocok.',
+                    ),
                   ),
                 for (final book in matches)
                   Card(
@@ -121,17 +158,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     elevation: 0,
                     color: Colors.transparent,
                     child: Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 2,
+                      ),
                       child: Row(
                         children: [
                           Image.asset(
                             'assets/${book.id}.jpg',
-                            width: 56,
-                            height: 78,
+                            width: 62,
+                            height: 88,
                             fit: BoxFit.cover,
                             errorBuilder: (_, _, _) => const SizedBox(
-                              width: 56,
-                              height: 78,
+                              width: 62,
+                              height: 88,
                               child: Icon(Icons.book_outlined),
                             ),
                           ),
@@ -146,8 +186,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                       .textTheme
                                       .titleMedium,
                                 ),
-                                Text(book.author),
-                                Text(book.genre),
+                                const SizedBox(height: 3),
+                                Text(
+                                  book.author,
+                                  style: const TextStyle(
+                                    color: Color(0xff45564c),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  book.genre,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium,
+                                ),
                               ],
                             ),
                           ),
